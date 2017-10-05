@@ -1,0 +1,31 @@
+load('../sampleimgdata')
+for s=1:2
+    rgbimg=sampleimg{s};
+    % rgbimg=sampleimg;
+    for n=3:6
+        [FBcellmask,centroids]=FBdetectraw_RFfun(rgbimg,n);
+        N=2*n+1;
+        save(['sample',num2str(s),'result_',num2str(N)],'FBcellmask','centroids')
+        %     save(['RBsample_',num2str(N)],'FBcellmask','centroids')
+    end
+end
+%%
+% % load('sampleimgdata')
+for s=1:2
+    rgbimg=sampleimg{s};
+    % rgbimg=sampleimg1;
+    for n=3:6
+        clf
+        N=2*n+1;
+        load(['sample',num2str(s),'result_',num2str(N)])
+        %     load(['RBsample_',num2str(N)])
+        img_edge=bwperim(FBcellmask);
+        
+        h=imoverlay(uint8(rgbimg),img_edge,'r');
+        %     h=imoverlay(uint8(img_nobak),img_edge,'w');
+        imagesc(h)
+        hold on, scatter(centroids(:,1),centroids(:,2),'w*')
+        saveas(gcf,['sample',num2str(s),'N_',num2str(N),'.fig'])
+        %     saveas(gcf,['RBsample_N_',num2str(N),'_nobak.fig'])
+    end
+end
