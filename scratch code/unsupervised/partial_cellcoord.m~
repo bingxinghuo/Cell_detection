@@ -1,11 +1,11 @@
 %% 1. manually correct the automatically detected cells
-mancell=manual_select(contrastimg);
+mancell=manual_select();
 %% 2. Get a zoom-in image
 xl=xlim;
 yl=ylim;
 xl=round(xl);
 yl=round(yl);
-acimg=contrastimg(yl(1):yl(2),xl(1):xl(2),:);
+acimg=combtestimg(xl(1):xl(2),xl(1):xl(2),:);
 %% get new coordinates of the cells within the FOV
 w=yl(2)-yl(1);
 h=xl(2)-xl(1);

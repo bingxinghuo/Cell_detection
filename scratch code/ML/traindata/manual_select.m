@@ -51,6 +51,11 @@ if showauto=='y'
     %     load([filenames{fsample},'_FB']) % load the detected cells
     load('FBdetectdata.mat', 'FBclear')
     FBautocell=FBclear{fsample};
+    % copy from the original cell detection
+    mancell.new=FBautocell;
+else
+    mancell.new.x=[];
+    mancell.new.y=[];
 end
 H=size(fluoroimg,1);
 W=size(fluoroimg,2);
@@ -58,8 +63,6 @@ W=size(fluoroimg,2);
 % initialize three fields in the final output
 mancell.FP=cell(2,1);
 mancell.FN=cell(2,1);
-mancell.new.x=[];
-mancell.new.y=[];
 % window size that allows visual inspection of individual cells
 win.width=512; % columns
 win.height=512; % rows
@@ -107,7 +110,7 @@ end
 %% 4. save to the current directory
 oksave=input('Save the results? (y/n) ','s');
 if oksave=='y'
-    save([filenames{fsample},'_manual'],'mancell')
+    save([filenames{fsample}(1:end-4),'_manual'],'mancell')
 end
 end
 %% Function windowselect.m to manually select cells within the defined window
@@ -166,22 +169,21 @@ if (sum(sum(imgtemp_mono>100))>10) % if there are at least 10 pixels with values
     if showauto=='y'
         checkpt='n';
         while checkpt=='n'
+            clear FPx FPy FNx FNy
             % 2.1 False negatives
             selectfinish='n';
             while selectfinish=='n'
+                if exist('h','var')==1
+                    delete(h)
+                    clear h
+                end
                 isFN=input('Any FALSE NEGATIVES in this image? (y/n) ','s');
                 if isFN=='y'
                     title(ax1,{'PLEASE SELECT WITHIN THIS PANEL'; 'double click to finish'},'fontsize',18, 'color', 'w')
                     
-                    [ptx,pty]=getpts(ax1); % select points
-                    hold on, scatter(ptx,pty,'wo')
+                    [FNx,FNy]=getpts(ax1); % select points
+                    hold on, h=scatter(FNx,FNy,'wo');
                     selectfinish=input('Do you accept all points? (y/n) ','s');
-                    % adjust to the entire image coordinates
-                    ptx=ptx+xedge(1);
-                    pty=pty+yedge(1);
-                    % save as a single variable for each dimension
-                    mancell.FN{1}=[mancell.FN{1};ptx];
-                    mancell.FN{2}=[mancell.FN{2};pty];
                 else
                     selectfinish='y'; % skp if there is no FN
                 end
@@ -190,6 +192,10 @@ if (sum(sum(imgtemp_mono>100))>10) % if there are at least 10 pixels with values
             if ~isempty(ind) % if there are cells automatically detected within the window
                 selectfinish='n';
                 while selectfinish=='n'
+                    if exist('dcm_obj','var')==1
+                        dcm_obj.removeAllDataCursors
+                        clear dcm_obj
+                    end
                     isFP=input('Any FALSE POSITIVES in this image? (y/n) ','s');
                     title(ax1,{'PLEASE SELECT WITHIN THIS PANEL'; 'Press shift to select multiple points'; ...
                         'When finish, press any key '},'fontsize',18, 'color', 'w')
@@ -203,54 +209,67 @@ if (sum(sum(imgtemp_mono>100))>10) % if there are at least 10 pixels with values
                     end
                 end
                 % get the coordinates of the selected points
-                if isFP=='y'
-                    if ~isempty(dcm_obj)
-                        FPinfo=getCursorInfo(dcm_obj);
-                        ptx=zeros(length(FPinfo),1);
-                        pty=ptx;
+                if exist('dcm_obj','var')==1
+                    FPinfo=getCursorInfo(dcm_obj);
+                    if ~isempty(FPinfo)
+                        FPx=zeros(length(FPinfo),1);
+                        FPy=FPx;
                         for c=1:length(FPinfo)
-                            ptx(c)=FPinfo(c).Position(1);
-                            pty(c)=FPinfo(c).Position(2);
+                            FPx(c)=FPinfo(c).Position(1);
+                            FPy(c)=FPinfo(c).Position(2);
                         end
-                        % hold on, scatter(ax1,ptx,pty,'wo')
-                        % adjust to the entire image coordinates
-                        ptx=ptx+xedge(1);
-                        pty=pty+yedge(1);
-                        % save as a single variable for each dimension
-                        mancell.FP{1}=[mancell.FP{1};ptx];
-                        mancell.FP{2}=[mancell.FP{2};pty];
                     end
+                    % hold on, scatter(ax1,FPx,FPy,'wo')
                 end
             end
             checkpt=input('Are you done with the current view? (y/n) ','s');
         end
         % assemble new cell detections
-        % copy from the original cell detection
-        mancell.new=FBautocell;
+        if exist('FNx','var')==1
+            if ~isempty(FNx)
+                % adjust to the entire image coordinates
+                FNx=FNx+xedge(1);
+                FNy=FNy+yedge(1);
+                % save as a single variable for each dimension
+                mancell.FN{1}=[mancell.FN{1};FNx];
+                mancell.FN{2}=[mancell.FN{2};FNy];
+                % add false negatives
+                mancell.new.x=[mancell.new.x;FNx];
+                mancell.new.y=[mancell.new.y;FNy];
+            end
+        end
         % remove false positives
-        for i=1:length(mancell.FP{1})
-            FPind(i)=find(FBautocell.x==mancell.FP{1}(i));
+        if exist('FPx','var')==1
+            if ~isempty(FPx)
+                % adjust to the entire image coordinates
+                FPx=FPx+xedge(1);
+                FPy=FPy+yedge(1);
+                % save as a single variable for each dimension
+                mancell.FP{1}=[mancell.FP{1};FPx];
+                mancell.FP{2}=[mancell.FP{2};FPy];
+                for i=1:length(FPx)
+                    FPind(i)=find(FBautocell.x==FPx(i));
+                end
+                mancell.new.x(FPind)=0;
+                mancell.new.y(FPind)=0;
+                clear FPind
+            end
         end
-        mancell.new.x(FPind)=[];
-        mancell.new.y(FPind)=[];
-        % add false negatives
-        mancell.new.x=[mancell.new.x;mancell.FN{1}];
-        mancell.new.y=[mancell.new.y;mancell.FN{2}];
-    elseif showauto=='n'
-        %% 3. manually select cells
-        checkpt='n';
-        while checkpt=='n'
-            title(ax1,{'PLEASE SELECT WITHIN THIS PANEL'; 'double click to finish'},'fontsize',18, 'color', 'w')
-            [ptx,pty]=getpts(ax1); % select points
-            hold on, scatter(ax1,ptx,pty,'wo') % show them in white afterwards
-            % adjust to the entire image coordinates
-            ptx=ptx+xedge(1);
-            pty=pty+yedge(1);
-            % save as a single variable for each dimension
-            mancell.new.x=[mancell.new.x;ptx];
-            mancell.new.y=[mancell.new.y;pty];
-            checkpt=input('Are you done with the current view? (y/n) ','s');
-        end
+    end
+elseif showauto=='n'
+    %% 3. manually select cells
+    checkpt='n';
+    while checkpt=='n'
+        title(ax1,{'PLEASE SELECT WITHIN THIS PANEL'; 'double click to finish'},'fontsize',18, 'color', 'w')
+        [ptx,pty]=getpts(ax1); % select points
+        hold on, scatter(ax1,ptx,pty,'wo') % show them in white afterwards
+        % adjust to the entire image coordinates
+        ptx=ptx+xedge(1);
+        pty=pty+yedge(1);
+        % save as a single variable for each dimension
+        mancell.new.x=[mancell.new.x;ptx];
+        mancell.new.y=[mancell.new.y;pty];
+        checkpt=input('Are you done with the current view? (y/n) ','s');
     end
 end
 end
