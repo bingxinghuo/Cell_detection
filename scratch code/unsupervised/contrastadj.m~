@@ -25,7 +25,7 @@ figure, loglog(freq,imgSm)
 %% 2. Observed harmonics of a fundamental frequency. Use a comb filter to
 % cancel it. This method can be improved in future. 
 f0=.0009766;
-q=16;
+q=1;
 bw=(f0/(fs/2))/q;
 [b,a]=iircomb(round(fs/f0),bw,'notch');
 % adjust zero

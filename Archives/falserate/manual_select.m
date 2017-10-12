@@ -1,5 +1,5 @@
-%% Manual selection of FB labeled cells
-% Ad hoc solution for Dr. Rosa
+%% Manual selection/proofreading of FB labeled cells
+% Revised Oct 2017
 % For inquiries please contact Bingxing (bingxing.huo@gmail.com)
 % This function allows interactive selection of falsely detected cells or
 % manually detect the FB labeled cells
@@ -17,17 +17,16 @@
 %       in cell (2,1);
 %       -- FP: similarly, a 2-by-1 cell containing the coordinates of false
 %       positives.
-%       -- new: similarly, a 2-by-1 cell containing the coordinates of manually selected FB labeled cells. 
+%       -- new: similarly, a 2-by-1 cell containing the coordinates of manually selected FB labeled cells.
 %   Choice to save mancell to the current directory.
+%
+% Originally designed as ad hoc solution for Dr. Rosa in Nov 2016
+%%
 function mancell=manual_select(varargin)
 global bitinfo showauto FBautocell H W      % global variables that are used across functions
 %% 1. read in file
-files=dir('./*.jp2'); % get all the jp2 files in the directory
-for f=1:length(files)
-    filenames{f}=files(f).name(1:end-4);
-    disp(['File ',num2str(f),': ',filenames{f}]) % list all file names
-end
-fsample=input(['Please select which file you would like to see (1~',num2str(length(files)),'): ']);
+filenames=jp2lsread;
+fsample=input(['Please select which file you would like to see (1~',num2str(length(filenames)),'): ']);
 if nargin==0
     fluoroimg=imread(filenames{fsample},'jp2'); % load the image
     fileinf=imfinfo(files(fsample).name); % get the image information
@@ -49,8 +48,9 @@ end
 %% 2. load automatically detected results
 showauto=input('Do you want to see the automatically detected cells? (y/n) ','s');
 if showauto=='y'
-    load([filenames{fsample},'_FB']) % load the detected cells
-    
+    %     load([filenames{fsample},'_FB']) % load the detected cells
+    load('FBdetectdata.mat', 'FBclear')
+    FBautocell=FBclear{fsample};
 end
 H=size(fluoroimg,1);
 W=size(fluoroimg,2);
@@ -58,10 +58,11 @@ W=size(fluoroimg,2);
 % initialize three fields in the final output
 mancell.FP=cell(2,1);
 mancell.FN=cell(2,1);
-mancell.new=cell(2,1);
+mancell.new.x=[];
+mancell.new.y=[];
 % window size that allows visual inspection of individual cells
-win.width=500; % columns
-win.height=400; % rows
+win.width=512; % columns
+win.height=512; % rows
 manualregion=input('Do you want to manually select a region (s) or go through the entire image (e) (s/e)? ','s');
 figure('Color',[0 0 0]) % black background for easier visualization of fluorescent images
 if manualregion=='e'
@@ -110,7 +111,7 @@ if oksave=='y'
 end
 end
 %% Function windowselect.m to manually select cells within the defined window
-% Input: 
+% Input:
 %   imgtemp_rgb: RGB image within the ROI
 %   xedge: edges in the horizontal direction
 %   yedge: edges in the vertical direction
@@ -202,25 +203,39 @@ if (sum(sum(imgtemp_mono>100))>10) % if there are at least 10 pixels with values
                     end
                 end
                 % get the coordinates of the selected points
-                if ~isempty(dcm_obj)
-                    FPinfo=getCursorInfo(dcm_obj);
-                    ptx=zeros(length(FPinfo),1);
-                    pty=ptx;
-                    for c=1:length(FPinfo)
-                        ptx(c)=FPinfo(c).Position(1);
-                        pty(c)=FPinfo(c).Position(2);
+                if isFP=='y'
+                    if ~isempty(dcm_obj)
+                        FPinfo=getCursorInfo(dcm_obj);
+                        ptx=zeros(length(FPinfo),1);
+                        pty=ptx;
+                        for c=1:length(FPinfo)
+                            ptx(c)=FPinfo(c).Position(1);
+                            pty(c)=FPinfo(c).Position(2);
+                        end
+                        % hold on, scatter(ax1,ptx,pty,'wo')
+                        % adjust to the entire image coordinates
+                        ptx=ptx+xedge(1);
+                        pty=pty+yedge(1);
+                        % save as a single variable for each dimension
+                        mancell.FP{1}=[mancell.FP{1};ptx];
+                        mancell.FP{2}=[mancell.FP{2};pty];
                     end
-                    % hold on, scatter(ax1,ptx,pty,'wo')
-                    % adjust to the entire image coordinates
-                    ptx=ptx+xedge(1);
-                    pty=pty+yedge(1);
-                    % save as a single variable for each dimension
-                    mancell.FP{1}=[mancell.FP{1};ptx];
-                    mancell.FP{2}=[mancell.FP{2};pty];
                 end
             end
             checkpt=input('Are you done with the current view? (y/n) ','s');
         end
+        % assemble new cell detections
+        % copy from the original cell detection
+        mancell.new=FBautocell;
+        % remove false positives
+        for i=1:length(mancell.FP{1})
+            FPind(i)=find(FBautocell.x==mancell.FP{1}(i));
+        end
+        mancell.new.x(FPind)=[];
+        mancell.new.y(FPind)=[];
+        % add false negatives
+        mancell.new.x=[mancell.new.x;mancell.FN{1}];
+        mancell.new.y=[mancell.new.y;mancell.FN{2}];
     elseif showauto=='n'
         %% 3. manually select cells
         checkpt='n';
@@ -232,8 +247,8 @@ if (sum(sum(imgtemp_mono>100))>10) % if there are at least 10 pixels with values
             ptx=ptx+xedge(1);
             pty=pty+yedge(1);
             % save as a single variable for each dimension
-            mancell.new{1}=[mancell.new{1};ptx];
-            mancell.new{2}=[mancell.new{2};pty];
+            mancell.new.x=[mancell.new.x;ptx];
+            mancell.new.y=[mancell.new.y;pty];
             checkpt=input('Are you done with the current view? (y/n) ','s');
         end
     end
