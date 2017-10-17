@@ -3,7 +3,7 @@ sampleimgs={'M820-F50--_3_0150.jp2';'M820-F112--_3_0336.jp2'};
 fileid=sampleimgs{i};
 fluoroimg=imread(fileid,'jp2');
 %% scratch code for image adjustment
-% contrastimg=fluoroimg;
+contrastimg=fluoroimg;
 for c=1:3
     [n(:,c),x]=imhist(contrastimg(:,:,c));
 end
@@ -12,7 +12,7 @@ figure, semilogy(x,n)
 Rcontrast=imhistmatch(fluoroimg(:,:,1),fluoroimg(:,:,2));
 contrastimg(:,:,1)=Rcontrast;
 %% 2. remove the vertical stripes in the image
-c=1;
+c=3;
 imgtest=fluoroimg(10000:15000,:,c);
 imgtest=double(imgtest);
 % 2.1. Since all stripes are vertical, calculate the power spectrum along horizontal direction
@@ -35,13 +35,18 @@ combfft=fft(combtest');
 combfft=combfft(1:N/2+1,:);
 combS=abs(combfft).^2;
 combSm=mean(combS,2);
-figure, loglog(freq,combSm)
-% 2.4. save the filtered image
+hold on, loglog(freq,combSm)
+%% 2.4. save the filtered image
 save('sampleadj','combtestimg')
 %% 3. enhance blue channel using a sigmoid function
+% Bcontrast=fluoroimg(:,:,3);
+Bcontrast=combimg(:,:,3);
+Bcontrast=single(Bcontrast);
 % Bcontrast=Btest+Btest.*(1./(1+exp(-Btest)));
-Bcontrast=imgtest/2+imgtest.*(1./(1+exp(-(imgtest-100)/1)));
-contrastimg(:,:,3)=uint8(Bcontrast);
+Bcontrast=Bcontrast+Bcontrast.*(1./(1+exp(-(Bcontrast-30)/1)));
+% contrastimg(:,:,3)=uint8(Bcontrast);
+combimg(:,:,3)=uint8(Bcontrast);
 %% 4. save the adjusted image
-save('sampleadj','contrastimg','-append')
+% save('sampleadj','contrastimg','-append')
+save('sampleadj','combimg','-append')
 %% One more thing to try: log the image first

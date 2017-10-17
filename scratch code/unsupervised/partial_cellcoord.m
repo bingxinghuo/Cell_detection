@@ -5,7 +5,7 @@ xl=xlim;
 yl=ylim;
 xl=round(xl);
 yl=round(yl);
-acimg=contrastimg(yl(1):yl(2),xl(1):xl(2),:);
+acimg=combimg(yl(1):yl(2),xl(1):xl(2),:);
 %% get new coordinates of the cells within the FOV
 w=yl(2)-yl(1);
 h=xl(2)-xl(1);
@@ -15,7 +15,7 @@ indx=find(accells.x>0);
 indx=find(accells.x<h);
 indy=find(accells.y>0);
 indy=find(accells.y<w);
-[common,ind]=ismember(indy,indx)
+[common,ind]=ismember(indy,indx);
 indmatch=indx(nonzeros(ind)); % alternatively, indmatch=indy(find(common));
 accells.x=accells.x(indmatch);
 accells.y=accells.y(indmatch);
