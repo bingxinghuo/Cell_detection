@@ -13,7 +13,7 @@ for d=1:2
     % read file list
     filelist=jp2lsread;
     Nf=length(filelist);
-    failmsg=cells(Nf,1); % allocate a vector to catch failures
+    failmsg=cell(Nf,1); % allocate a vector to catch failures
     parfor f=1:Nf
         try
             fileid=filelist{f};
