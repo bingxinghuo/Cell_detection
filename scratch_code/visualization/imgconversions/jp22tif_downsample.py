@@ -54,7 +54,7 @@ def FileProcess(filename):
 
 if __name__ == "__main__":
     filepath='cellmasks/8bitRGB'
-    filelist = [filepath + f for f in listdir(filepath) if isfile(join(filepath, f))]
+    filelist = [filepath + '/' + f for f in listdir(filepath) if isfile(join(filepath, f))]
     
     p=Pool(8)
     p.map(FileProcess,tuple(filelist))
