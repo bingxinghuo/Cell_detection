@@ -10,7 +10,7 @@ for d=1:2
         %         fileout=[fileid(1:end-4),'16rgb.jp2'];
         fileout=['../8bitRGBnew/',filein];
         if exist(fileout,'file')~=2 % avoid re-processing detections
-            rgbconvbloc(filein,fileout)
+            bit16to8_bloc(filein,fileout)
         end
     end
 end

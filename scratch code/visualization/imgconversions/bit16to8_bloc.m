@@ -1,5 +1,5 @@
 %% 16 bit
-% function rgbconvbloc(filein,fileout)
+% function bit16to8_bloc(filein,fileout)
 % myFun = @(block_struct) blockgradient(block_struct);
 % block_size=[512,512];
 % blockproc(filein,block_size,myFun,'Destination',fileout);
@@ -13,7 +13,7 @@
 %% 8 bit
 % This part of the code aims at converting either binary or 16-bit black/blue JP2
 % into 8-bit black/white JP2
-function rgbconvbloc(filein,fileout)
+function bit16to8_bloc(filein,fileout)
 bitinfo=imfinfo(filein);
 bitinfo=bitinfo.BitDepth;
 if bitinfo==1

@@ -1,4 +1,4 @@
-function []=rgbconvwrapper_bnb()
+function []=bit16to8_wrapper_bnb()
 myCluster = parcluster('local'); % cores on compute node to be "local"
 addpath(genpath('~/'))
 poolobj=parpool(myCluster, 16);
@@ -14,7 +14,7 @@ for d=1:2
         %         fileout=[fileid(1:end-4),'16rgb.jp2'];
         fileout=['~/marmosetdata/',brainid,'/8bitRGBnew/',filein];
         if exist(fileout,'file')~=2 % avoid re-processing detections
-            rgbconvbloc(filein,fileout)
+            bit16to8_bloc(filein,fileout)
         end
     end
 end
