@@ -1,3 +1,7 @@
+function []=rgbconvwrapper_bnb()
+myCluster = parcluster('local'); % cores on compute node to be "local"
+addpath(genpath('~/'))
+poolobj=parpool(myCluster, 16);
 brainids={'m920';'m919'};
 for d=1:2
     brainid=brainids{d};
@@ -14,3 +18,4 @@ for d=1:2
         end
     end
 end
+delete(poolobj)
