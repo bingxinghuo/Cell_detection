@@ -11,7 +11,7 @@ for d=1:2
         if fileinfo.Width==751
             maskimg=imread(filein,'tif');
             maskimg=maskimg(:,1:750,:);
-            imwrite(maskdown,filein,'tif','compression','none','writemode','overwrite')
+            imwrite(maskimg,filein,'tif','compression','none','writemode','overwrite')
         end
     end
 end
