@@ -2,7 +2,7 @@ brainids={'m920';'m919'};
 for d=1:2
     brainid=brainids{d};
     %     cd(['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2-REG/cellmasks/binaryimg'])
-    cd(['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2-REG/cellmasks/8bitRGB/'])
+    cd(['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2-REG/cellmasks/8bitRGBnew/'])
     filelist=jp2lsread;
     Nf=length(filelist);
     parfor f=1:Nf
