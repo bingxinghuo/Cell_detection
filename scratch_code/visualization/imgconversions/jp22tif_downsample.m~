@@ -1,16 +1,10 @@
 function imgdown=jp22tif_downsample(img,M)
 [rows,cols]=size(img);
-if mod(rows,M)==0
-    padrow=0;
-else
-    padrow=M-mod(rows,M);
-end
+padrow=M-min(mod(rows,M);
 imgpad=[img;uint8(zeros(padrow,cols))];
-if mode(cols,M)==0
-    padcol=0;
+if padcol~=0
+padcol=M-mod(cols,M);
 else
-    padcol=M-mod(cols,M);
-end
 imgpad=[imgpad,uint8(zeros(rows+padrow,padcol))];
 [rows,cols]=size(imgpad);
 imgdown=uint8(zeros(rows/M,cols/M));
