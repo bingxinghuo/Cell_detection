@@ -29,7 +29,7 @@ filenames=jp2lsread;
 fsample=input(['Please select which file you would like to see (1~',num2str(length(filenames)),'): ']);
 if nargin==0
     fluoroimg=imread(filenames{fsample},'jp2'); % load the image
-    fileinf=imfinfo(files(fsample).name); % get the image information
+    fileinf=imfinfo(filenames{fsample}); % get the image information
     bitinfo=fileinf.BitsPerSample;
     if bitinfo==[8,8,8]
         bitinfo=8; % 8-bit data are stored in uint8 format
@@ -103,8 +103,23 @@ elseif manualregion=='s'
     pos=round(pos);
     xedge=[pos(1),pos(1)+pos(3)];
     yedge=[pos(2),pos(2)+pos(4)];
-    imgtemp_rgb=fluoroimg(yedge(1):yedge(2),xedge(1):xedge(2),:);
-    mancell=windowselect(imgtemp_rgb,xedge,yedge,mancell); % manual selection
+    if pos(3)>512 || pos(4)>512
+        W=pos(3);
+        H=pos(4);
+        win.hori=floor(W/win.width)+1; % steps to move in the horizontal direction
+        win.vert=floor(H/win.height)+1; % steps to move in the vertical direction
+        for v=1:win.vert % then move down
+            for h=1:win.hori % first move horizontally
+                yedge=[(v-1)*win.height,v*win.height]; % edges in the vertical direction
+                xedge=[(h-1)*win.width,h*win.width]; % edges in the horizontal direction
+                imgtemp_rgb=fluoroimg(yedge(1)+1:min(yedge(2),H),xedge(1)+1:min(xedge(2),W),:);
+                mancell=windowselect(imgtemp_rgb,xedge,yedge,mancell); % manual selection
+            end
+        end
+    else
+        imgtemp_rgb=fluoroimg(yedge(1):yedge(2),xedge(1):xedge(2),:);
+        mancell=windowselect(imgtemp_rgb,xedge,yedge,mancell); % manual selection
+    end
     
 end
 %% 4. save to the current directory
