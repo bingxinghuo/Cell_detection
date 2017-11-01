@@ -1,4 +1,4 @@
-function mat2tifstack(filelist,outputtif)
+function mat2tifstack(filelist,outputtif,M)
 %% 1. read file list
 Nfiles=length(filelist);
 %% 2. write
@@ -10,9 +10,10 @@ for f=1:Nfiles
         maskvar=fieldnames(stackimg);
         stackimg=getfield(stackimg,maskvar{1});
     end
+    stackimgdown=downsample_max(stackimg,M);
     if f==1
-        imwrite(stackimg,outputtif,'tif','compression','lzw','writemode','overwrite')
+        imwrite(stackimgdown,outputtif,'tif','compression','lzw','writemode','overwrite')
     else
-        imwrite(stackimg,outputtif,'tif','compression','lzw','writemode','append')
+        imwrite(stackimgdown,outputtif,'tif','compression','lzw','writemode','append')
     end
 end
