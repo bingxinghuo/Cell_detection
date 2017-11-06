@@ -8,8 +8,10 @@ function svmcellblock(fluoroimg,n,svmmodel,fileout)
 myfun = @(block_struct) svmcell(block_struct,n,svmmodel);
 block_size=[512,512];
 border_size=[n*5,n*5];
+% blockproc(fluoroimg,block_size,myfun,'BorderSize',border_size,...
+%     'Destination',fileout,'UseParallel',true,'DisplayWaitbar',false);
 blockproc(fluoroimg,block_size,myfun,'BorderSize',border_size,...
-    'Destination',fileout,'UseParallel',true,'DisplayWaitbar',false);
+    'Destination',fileout,'UseParallel',true);
 % newimg=blockproc(fluoroimg,block_size,myfun,'BorderSize',border_size);
 end
 
