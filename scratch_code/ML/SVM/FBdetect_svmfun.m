@@ -1,6 +1,6 @@
 function [FBcellmask,centroids]=FBdetect_svmfun(rgbimg,svmmodel)
 global bitinfo sigma sizepar eccpar
-%% 0. parameters
+% 0. parameters
 bitinfo=12;
 sizepar=[40,5000];
 eccpar=[.99,.95];
