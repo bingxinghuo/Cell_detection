@@ -42,7 +42,7 @@ if sum(sum(block_struct.data(:,:,3)>50))>100
 else
     [rows,cols,~]=size(block_struct.data);
     %     cellmask=uint16(zeros(rows,cols));
-    cellmask=true(zeros(rows,cols));
+    cellmask=false(rows,cols);
 end
 % channelpad=uint16(zeros(rows,cols));
 % cellmask=cat(3,channelpad,channelpad,cellmask);
