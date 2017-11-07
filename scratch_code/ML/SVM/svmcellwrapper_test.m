@@ -3,7 +3,8 @@
 load('~/scripts/denoiseSVM.mat','svmmodel')
 sigma=[20,1];
 brainN={'m919';'m920'};
-for i=1:length(brainN)
+% for i=1:length(brainN)
+for i=2
     brainid=brainN{i};
     fluorodir=['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/'];
     savedir=['~/marmosetdata/',brainid,'/'];
@@ -13,7 +14,8 @@ for i=1:length(brainN)
     cd([fluorodir,'JP2-REG/'])
     filelist=jp2lsread;
     Nf=length(filelist);
-    parfor f=1:Nf
+    %     parfor f=1:Nf
+    for f=218
         try
             % load image
             fileid=filelist{f};
@@ -38,9 +40,13 @@ for i=1:length(brainN)
                 % 2.1 apply denoise filter
                 rgbdenoise=rmbg(rgbimg,sigma);
                 % 3. use SVM to predict cells
-                cellimg=svmcellblock(rgbdenoise,5,svmmodel)
+                cellmask=svmcellblock(rgbdenoise,5,svmmodel);
                 % 4. post-process
                 % TBD
+                % 5. project back to the original image size
+        [rows,cols,~]=size(fluoroimg);
+        cellmask_origin=false(rows,cols);
+        cellmask_origin(imgorigin(1):imgorigin(3),imgorigin(2):imgorigin(4))=cellmask;
             end
         catch ME
             f
