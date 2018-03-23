@@ -8,6 +8,7 @@ fluorotif=[tifdir,jp2file(1:end-4),'.tif'];
 fluimg=imread(fluorotif,'tif');
 [rows,columns,~]=size(fluimg);
 imgmask=false(rows, columns);
+M=64;
 %% 1. adjust image
 % 1.1 convert color scale
 fluoroimg1=single(fluimg)/2^12*2^8;
@@ -44,6 +45,16 @@ if ~isempty(Ncross)
     dimg=bwareaopen(dimg,100);
     %% 2. find objects
     L=bwlabel(dimg);
+    % remove the regions connected to the edges
+    edgeind=unique(L(:,1));
+    edgeind=[edgeind;unique(L(:,end))];
+    edgeind=[edgeind;unique(L(1,:)')];
+    edgeind=[edgeind;unique(L(end,:)')];
+    edgeind=unique(edgeind);
+    edgeind=nonzeros(edgeind);
+    for ie=1:length(edgeind)
+    L(L==edgeind(ie))=0;
+    end
     % 2.1 Obtain the connectivity information
     CC=bwconncomp(dimg);
     % 2.2 Obtain the area of each object

@@ -5,6 +5,7 @@ function brainmaskbatch(brainid)
 % cd(['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2-REG']) % go to the directory of JP2
 jp2dir=cd(['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']); % go to the directory of JP2
 cd(jp2dir)
+%%
 filelist=jp2lsread;
 Nfiles=length(filelist);
 % Generate the masks for brain section
@@ -18,7 +19,7 @@ parfor f=1:Nfiles
         % load image
         fileid=filelist{f};
         %         fluoroimg=imread(fileid,'jp2');
-        maskname=['imgmasks/imgmaskdata_',num2str(f),'.mat'];
+        maskname=['imgmasks/imgmaskdata_',num2str(f),'.tif'];
         % load/generate brain section mask (note: there are errors in some images)
         if exist([pwd,'/',maskname],'file')~=2  % no mask file yet
             %             imgmask=brainmaskfun_reg(fluoroimg)
