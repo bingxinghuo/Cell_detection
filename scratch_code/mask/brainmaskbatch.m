@@ -21,7 +21,7 @@ parfor f=1:Nfiles
         % load/generate brain section mask (note: there are errors in some images)
         if exist([pwd,'/',maskname],'file')~=2  % no mask file yet
             %             imgmask=brainmaskfun_reg(fluoroimg)
-            imgmask=brainmaskfun_16bittif(fileid,'../STIF/','./')
+            imgmask=brainmaskfun_16bittif(fileid,['../',upper(brainid),'-STIF/','./')
             %             parsave(maskname,imgmask)
             imwrite(imgmask,maskname,'tif')
         end
