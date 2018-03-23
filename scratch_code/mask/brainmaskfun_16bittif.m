@@ -7,7 +7,7 @@ function imgmask0=brainmaskfun_16bittif(jp2file,tifdir,jp2dir)
 fluorotif=[tifdir,jp2file(1:end-4),'.tif'];
 fluimg=imread(fluorotif,'tif');
 [rows,cols,~]=size(fluimg);
-imgmask=false(rows, columns);
+imgmask=false(rows, cols);
 %% 1. adjust image
 % 1.1 convert color scale
 fluoroimg1=single(fluimg)/2^12*2^8;
@@ -53,7 +53,7 @@ if ~isempty(Ncross)
     end
     % 2.3 Threshold the area of each object
     totpix=rows*columns;
-    [num1,numind]=find(num>totpix*.0001); % the object is at least 0.1% of the whole image
+    [num1,~]=find(num>totpix*.0001); % the object is at least 0.1% of the whole image
     % generate a blank binary image
     for i=1:length(num1)
         imgmask=imgmask+(L==num1(i)); % include the object
