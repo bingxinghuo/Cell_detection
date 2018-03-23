@@ -6,8 +6,8 @@
 function imgmask0=brainmaskfun_16bittif(jp2file,tifdir,jp2dir)
 fluorotif=[tifdir,jp2file(1:end-4),'.tif'];
 fluimg=imread(fluorotif,'tif');
-[rows,cols,~]=size(fluimg);
-imgmask=false(rows, cols);
+[rows,columns,~]=size(fluimg);
+imgmask=false(rows, columns);
 %% 1. adjust image
 % 1.1 convert color scale
 fluoroimg1=single(fluimg)/2^12*2^8;
