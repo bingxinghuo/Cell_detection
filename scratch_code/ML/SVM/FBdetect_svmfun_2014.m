@@ -6,9 +6,9 @@ eccpar=[.99,.95];
 sigma=[20,1];
 %% 1. Global linear filter
 % 1.1 Remove a blurred background
-% h1=fspecial('gaussian',[1,2*3*20+1],20);
-% h2=fspecial('gaussian',[1,2*3*20+1],1);
-% h=h2-h1;
+h1=fspecial('gaussian',[1,2*3*20+1],20);
+h2=fspecial('gaussian',[1,2*3*20+1],1);
+h=h2-h1;
 %  bg=imgaussfilt(single(rgbimg),sigma(1));
 bg=imfilter(single(rgbimg),fspecial('gaussian',2*ceil(2*sigma(1))+1, sigma(1)),'same');
 img_nobak=single(rgbimg)-bg;

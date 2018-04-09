@@ -19,7 +19,7 @@ for d=1:2
             %         if pixcount>10
             % 4. downsample
             tic;
-            maskdown=downsample_max(maskimg,M);
+            maskdown=downsample_mean(maskimg,M);
             toc
             %         end
             maskdown=cat(3,maskdown,maskdown,maskdown);

@@ -9,10 +9,7 @@
 %% 0. Preparation
 global bitinfo
 % 0.1 read in file list
-fid=fopen('filenames.txt');
-filelist=textscan(fid,'%q');
-fclose(fid);
-filelist=filelist{1};
+filelist=jp2lsread;
 Nfiles=length(filelist);
 % 0.2 initialize
 FBclear=cell(Nfiles,1);
@@ -26,13 +23,13 @@ FBclear=cell(Nfiles,1);
 % % Nrestart=sum(Nrestart)+1;
 Nrestart=1;
 % info on bits
-fileinf=imfinfo(filelist{1});
-bitinfo=fileinf.BitsPerSample;
-if bitinfo==[8,8,8]
-    bitinfo=8;
-elseif bitinfo==[16, 16, 16]
+% fileinf=imfinfo(filelist{1});
+% bitinfo=fileinf.BitsPerSample;
+% if bitinfo==[8,8,8]
+%     bitinfo=8;
+% elseif bitinfo==[16, 16, 16]
     bitinfo=12;
-end
+% end
 %% 1. Go through every image
 parfor f=Nrestart:Nfiles
     try
@@ -46,12 +43,13 @@ parfor f=Nrestart:Nfiles
             maskvar=fieldnames(imgmask);
             imgmask=getfield(imgmask,maskvar{1});
         else
-            if bitinfo==12
-                imgmask=brainmaskfun_16bit(fluoroimg); % generate a mask for the brain region
-            elseif bitinfo==8
-                imgmask=brainmaskfun_8bit(fluoroimg);
-            end
-            parsave(maskname,imgmask)
+%             if bitinfo==12
+%                 imgmask=brainmaskfun_16bit(fluoroimg); % generate a mask for the brain region
+%             elseif bitinfo==8
+%                 imgmask=brainmaskfun_8bit(fluoroimg);
+%             end
+%             parsave(maskname,imgmask)
+    imgmask=brainmaskfun_16bit(fileid,'/','./'); % generate a mask for the brain region
         end
         % 1.3 detect cells
         centroids=FBdetection_consolid_v5_2014(fluoroimg,imgmask);

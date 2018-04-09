@@ -10,7 +10,7 @@ for f=1:Nfiles
         maskvar=fieldnames(stackimg);
         stackimg=getfield(stackimg,maskvar{1});
     end
-    stackimgdown=downsample_max(stackimg,M);
+    stackimgdown=downsample_mean(stackimg,M);
     if f==1
         imwrite(stackimgdown,outputtif,'tif','compression','lzw','writemode','overwrite')
     else

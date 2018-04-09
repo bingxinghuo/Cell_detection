@@ -19,7 +19,7 @@ if ~exist(nissltif,'file')
     nisslimg=imread(['~/CSHLservers/mitragpu3/marmosetRIKEN/NZ/m920/m920N/JP2/',fileid],'jp2');
     % downsample
     for i=1:3
-        nisslsmall(:,:,i)=downsample_max(nisslimg(:,:,i),M);
+        nisslsmall(:,:,i)=downsample_mean(nisslimg(:,:,i),M);
     end
     % save
     imwrite(nisslsmall,nissltif,'tif','compression','lzw')
@@ -56,7 +56,7 @@ else
     ROIdown=cell(R,1);
     % downsample
     for r=1:NROI
-        ROIdown{r}=downsample_max(ROIinfo.ROIboundary{r,1},M);
+        ROIdown{r}=downsample_mean(ROIinfo.ROIboundary{r,1},M);
     end
     %% identify regions
     figure, imagesc(nisslsmall)

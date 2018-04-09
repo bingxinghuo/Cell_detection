@@ -8,7 +8,7 @@ for f=fileind1:fileind2
     nissljp2=filelist{f};
 %     LGNmaskfile=[nissljp2(1:end-4),'_LGN.tif'];
 %     LGNmask=imread(LGNmaskfile);
-%     LGNmaskdown=downsample_max(LGNmask,M);
+%     LGNmaskdown=downsample_mean(LGNmask,M);
 %     LGNsmallfile=[LGNmaskfile(1:end-5),'down.tif'];
 %     imwrite(LGNmaskdown,LGNsmallfile)
 LGNsmallfile=[nissljp2(1:end-4),'_LGdown.tif'];    
