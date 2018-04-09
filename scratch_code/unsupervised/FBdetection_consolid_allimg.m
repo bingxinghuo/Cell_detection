@@ -6,8 +6,11 @@
 %     - FBdetection_consolid_v5_2014.m based on consolidating Keerthi &
 %       Bingxing's code
 %     - parsave.m to save the results while still within the parfor loop
+function FBdetection_consolid_allimg(brainid)
 %% 0. Preparation
 global bitinfo
+jp2dir=['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
+cd(jp2dir)
 % 0.1 read in file list
 filelist=jp2lsread;
 Nfiles=length(filelist);
@@ -28,7 +31,7 @@ Nrestart=1;
 % if bitinfo==[8,8,8]
 %     bitinfo=8;
 % elseif bitinfo==[16, 16, 16]
-    bitinfo=12;
+bitinfo=12;
 % end
 %% 1. Go through every image
 parfor f=Nrestart:Nfiles
@@ -37,19 +40,21 @@ parfor f=Nrestart:Nfiles
         fileid=filelist{f};
         fluoroimg=imread(fileid,'jp2');
         % 1.2 generate and save the mask
-        maskname=['imgmasks/imgmaskdata_',num2str(f),'.mat']; % save the mask
-        if exist([pwd,'/',maskname],'file')==2
-            imgmask=load(maskname);
+        maskfile=['imgmasks/imgmaskdata_',num2str(f)]; % save the mask
+        if exist([maskfile,'.tif'],'file')
+            imgmask=imread(maskfile,'tif');
+        elseif exist([maskfile,'.mat'],'file')
+            imgmask=load(maskfile);
             maskvar=fieldnames(imgmask);
             imgmask=getfield(imgmask,maskvar{1});
         else
-%             if bitinfo==12
-%                 imgmask=brainmaskfun_16bit(fluoroimg); % generate a mask for the brain region
-%             elseif bitinfo==8
-%                 imgmask=brainmaskfun_8bit(fluoroimg);
-%             end
-%             parsave(maskname,imgmask)
-    imgmask=brainmaskfun_16bit(fileid,'/','./'); % generate a mask for the brain region
+            %             if bitinfo==12
+            %                 imgmask=brainmaskfun_16bit(fluoroimg); % generate a mask for the brain region
+            %             elseif bitinfo==8
+            %                 imgmask=brainmaskfun_8bit(fluoroimg);
+            %             end
+            %             parsave(maskname,imgmask)
+            imgmask=brainmaskfun_16bit(fileid,['../',upper(brainid),'F-STIF/'],'./'); % generate a mask for the brain region
         end
         % 1.3 detect cells
         centroids=FBdetection_consolid_v5_2014(fluoroimg,imgmask);
@@ -60,8 +65,8 @@ parfor f=Nrestart:Nfiles
             FBclear{f}.x=[];
             FBclear{f}.y=[];
         end
-%         save([pwd,'/FBdetectdata_consolid.mat'],'FBclear')
-%         parsave([pwd,'/FBdetectdata_consolid.mat'],FBclear)
+        %         save([pwd,'/FBdetectdata_consolid.mat'],'FBclear')
+        %         parsave([pwd,'/FBdetectdata_consolid.mat'],FBclear)
     catch ME
         f
         rethrow(ME)
