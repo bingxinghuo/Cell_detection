@@ -1,5 +1,11 @@
+brainid='m919';
+secid='491';
+%%
+% jp2dir=['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
+jp2dir=['/Users/bingxinghuo/CSHLservers/mitragpu3/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
+cd(jp2dir)
 filelist=jp2lsread;
-[f,jp2file]=jp2ind(filelist,'491');
+[f,jp2file]=jp2ind(filelist,secid);
 fluoroimg=imread(jp2file);
 %% Apply mask
 maskfile=['imgmasks/imgmaskdata_',num2str(f)];
@@ -13,6 +19,14 @@ end
 imgmask=uint16(imgmask);
 fluoroimg=fluoroimg.*cat(3,imgmask,imgmask,imgmask);
 %% Preprocess
+% load standard median for 3 channels
+load('background_standard') % this loads variable bgimgmed0
+% calculate background median
+tiffile=['../',upper(brainid),'F-STIF/',jp2file(1:end-4),'.tif'];
+fluimg=imread(tiffile);
+% load mask
+maskfile=['imgmasks/imgmaskdata_',num2str(f)];
+[~,bgimgmed]=bgmean3(tiffile,maskfile);
 % Make background adjustment on raw image
 adjmat=ones(size(fluoroimg));
 for c=1:3

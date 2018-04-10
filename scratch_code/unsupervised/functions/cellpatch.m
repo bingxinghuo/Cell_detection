@@ -5,8 +5,8 @@ bwimg_patch=cell(2,1);
 %% 1. Sukhendu's transformation
 % 1.1 Detect object perimeter
 % denoise
-bwimg_smooth=imgaussfilt(single(bwimg),sigma(2));
-% bwimg_smooth=imfilter(single(bwimg),fspecial('gaussian',2*ceil(2*sigma(2))+1, sigma(2)),'same');
+% bwimg_smooth=imgaussfilt(single(bwimg),sigma(2));
+bwimg_smooth=imfilter(single(bwimg),fspecial('gaussian',2*ceil(2*sigma(2))+1, sigma(2)),'same');
 bwimg1=im2bw(bwimg_smooth); % convert to binary
 edg = bwperim(bwimg1); % generate edges of cells
 % 1.2. Generate distance matrix

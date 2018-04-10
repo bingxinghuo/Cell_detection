@@ -6,7 +6,7 @@
 %     - FBdetection_consolid_v5_2014.m based on consolidating Keerthi &
 %       Bingxing's code
 %     - parsave.m to save the results while still within the parfor loop
-function FBdetection_consolid_allimg(brainid)
+function FBdetection_consolid_allimg1(brainid)
 %% 0. Preparation
 global bitinfo
 jp2dir=['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2

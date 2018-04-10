@@ -3,7 +3,8 @@ function brainmaskbatch(brainid)
 % myCluster = parcluster('local'); % cores on compute node to be "local"
 
 % cd(['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2-REG']) % go to the directory of JP2
-jp2dir=['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
+% jp2dir=['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
+jp2dir=['/Users/bingxinghuo/CSHLservers/mitragpu3/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
 cd(jp2dir)
 %%
 filelist=jp2lsread;
