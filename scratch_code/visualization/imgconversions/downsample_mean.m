@@ -6,7 +6,7 @@
 %   - M: integer specifying the downsampling scale
 % Output:
 %   - imgdown: 2-D matrix in the same type as img containing the downsampled image
-function imgdown=downsample_max(img,M)
+function imgdown=downsample_mean(img,M)
 [rows,cols]=size(img);
 % pad rows with zeros
 if mod(rows,M)==0

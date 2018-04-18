@@ -1,4 +1,4 @@
-load('traindata.mat')
+% load('traindata.mat')
 %
 Ntot=length(groupvector); % total number of training data available
 rng=1;
@@ -38,5 +38,6 @@ for i=1:dNn
 %     Jcv(i)=1/(2*length(cvpredict))*sum((groupdata{2}-cvpredict).^2);
     [Fcv(i,1),Fcv(i,2),Fcv(i,3)]=fscore(groupdata{2},cvpredict);
 end
+%%
 % save('traintestdata','dN','Jtrain','Jcv','Ftrain','Fcv','traindata','groupdata')
 save('traintestdata_RBF','dN','Ftrain','Fcv','traindata','groupdata')
