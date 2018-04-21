@@ -46,7 +46,7 @@ M=64;
 %% 1.1 downsample using *maximum* method
 clear flumax
 for c=1:3
-    flumax(:,:,c)=downsample_max(fluoroimg1(:,:,c),M);
+    flumax(:,:,c)=downsample_m(fluoroimg1(:,:,c),M,'max');
 end
 %% 1.2 threshold for signals
 sigmask=flumax>Ithresh; 
