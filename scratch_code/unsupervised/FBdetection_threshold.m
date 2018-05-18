@@ -72,14 +72,15 @@ end
 %%
     
     %% reassemble for visualization
-    tilevis=tilefilt;
+%     tilevis=tilefilt;
+tilevis=tileimg1;
     
     FBimg1=zeros(size(FBimg));
     for t=1:Ntiles
         FBimg1(sigrow1(t)+1:sigrow1(t)+M,sigcol1(t)+1:sigcol1(t)+M,:)=tilevis{t};
         
     end
-    figure, imagesc(uint8(FBimg1/2^4))
+    figure, imagesc(uint8(FBimg1))
     %%
     FBimg1=zeros(size(FBimg(:,:,1)));
     for t=1:Ntiles

@@ -16,13 +16,13 @@ Shsv(:,:,2)=bluemask;
 %% Value
 % normalize value channel
 V=Shsv(:,:,3).*bluemask;
-V=V./max(max(V)); % normalize to range [0 1]
-% sigmoid
-Imax=1;
-Imin=0;
-gain=20;
-Imid=.5;
-V=(Imax-Imin)./(1+exp(gain*(Imid-V)))+Imin;
+% V=V./max(max(V)); % normalize to range [0 1]
+% % sigmoid
+% Imax=1;
+% Imin=0;
+% gain=20;
+% Imid=.5;
+% V=(Imax-Imin)./(1+exp(gain*(Imid-V)))+Imin;
 %% Convert back to rgb, preserving [0 1] range
 % %% Convert everything back
 Shsv(:,:,3)=V;
