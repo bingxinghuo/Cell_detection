@@ -2,7 +2,8 @@ brainid='m919';
 secid='491';
 %%
 % jp2dir=['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
-jp2dir=['/Users/bingxinghuo/CSHLservers/mitragpu3/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
+% jp2dir=['/Users/bingxinghuo/CSHLservers/mitragpu3/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
+jp2dir=['/Users/bingxinghuo/CSHLservers/CSHLcompute/marmosetTEMP/JP2/',brainid,'/',brainid,'F/JP2/']; 
 cd(jp2dir)
 filelist=jp2lsread;
 [f,jp2file]=jp2ind(filelist,secid);
