@@ -1,3 +1,7 @@
+%% cell2tif8bit.m
+% This script converts cell coordinates into masks in 8-bit gray image 
+% prepared for running on BNB cluster
+% Save downsampled tif files for all images
 function []=cell2tif8bit()
 myCluster = parcluster('local'); % cores on compute node to be "local"
 addpath(genpath('~/'))
@@ -8,9 +12,13 @@ brainids={'m1148'};
 D=length(brainids);
 for d=1:D
     brainid=brainids{d};
+    % input directory
     % jp2dir=['/Users/bingxinghuo/CSHLservers/mitragpu3/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
     jp2dir=['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
     cd(jp2dir)
+    filelist=jp2lsread;
+    Nfiles=length(filelist);
+    % output directory
     celldir=['~/',brainid,'/cellmasks8bit/'];
     if ~exist(['~/',brainid],'dir')
         mkdir(['~/',brainid])
@@ -18,25 +26,18 @@ for d=1:D
     if ~exist(celldir,'dir')
         mkdir(celldir)
     end
-    load([jp2dir,'FBdetectdata_consolid.mat'])
-    filelist=jp2lsread;
-    Nfiles=length(filelist);
+    % cell coordinates
+    FBcoord=load([jp2dir,'FBdetectdata_consolid.mat']);
+    FBclear=FBcoord.FBclear;
+    % downsample rate
     M=64;
     parfor f=1:Nfiles
-        fileid=filelist{f};
-        cellsave=[celldir,fileid(1:end-4),'.tif'];
+        fileid=filelist{f}; % input file
+        cellsave=[celldir,fileid(1:end-4),'.tif']; % output file
         if ~exist(cellsave,'file')
-            jp2info=imfinfo(fileid);
-            cellmask=uint8(false(jp2info.Height,jp2info.Width));
             cellind=FBclear{f};
-            cellind.x=round(cellind.x);
-            cellind.y=round(cellind.y);
-            if ~isempty(cellind.x)
-                for c=1:size(cellind.x,1)
-                    cellmask(cellind.y(c),cellind.x(c))=255;
-                end
-            end
-            celldown=downsample_max(cellmask,M);
+            cellind=[cellind.x,cellind.y];
+            celldown=cellmaskgen(cellind,fileid,cellsave,M);
             imwrite(celldown,cellsave,'tif');
         end
     end
