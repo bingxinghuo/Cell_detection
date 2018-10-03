@@ -17,15 +17,15 @@ for d=1:D
     % Identify sections
     %     secind=secinds{d};
     % intput directory
-    jp2dir=['/Users/bingxinghuo/CSHLservers/mitragpu3/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
-    %         jp2dir=['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
-    %     jp2dir=['/nfs/mitraweb2/mnt/disk123/main/marmosetTEMP/JP2/',brainid,'/']; % go to the temporary directory of JP2 on M24
+    %     jp2dir=['/Users/bingxinghuo/CSHLservers/mitragpu3/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
+    %             jp2dir=['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
+    jp2dir=['/nfs/mitraweb2/mnt/disk123/main/marmosetTEMP/JP2/',brainid,'/']; % go to the temporary directory of JP2 on M24
     % NOTE: need to generate filenames.txt before running this from BNB
     %     filelist=jp2lsread; % get all the file names, including F and N
     %     Nfiles=length(secind);
     % output directory
-    brainid=upper(brainid);
-    outdir='/Users/bingxinghuo/Dropbox (Marmoset)/BingxingHuo/Marmoset Brain Architecture/Paul Martin/';
+    outdir='~/';
+    %     outdir='/Users/bingxinghuo/Dropbox (Marmoset)/BingxingHuo/Marmoset Brain Architecture/Paul Martin/';
     cellmaskdir=[outdir,brainid,'/cellmasks8bit/'];
     if ~exist([outdir,brainid],'dir')
         mkdir([outdir,brainid])
@@ -35,7 +35,7 @@ for d=1:D
     end
     
     % Get cell coordinates
-    cellannodir=[outdir,brainid,'/',brainid,'_cells/cellanno/'];
+    cellannodir=[outdir,brainid,'/',upper(brainid),'_cells/cellanno/'];
     cellcoorddata=load([cellannodir,'cellfullcoord.mat']);
     cellcoordfull=cellcoorddata.cellcoordfull;
     % file list
@@ -49,12 +49,12 @@ for d=1:D
             fileid=filelist{f};
             fileid=fileid(9:end-4); % remove 'Marking-' and '.txt'
             cellsave=[cellmaskdir,fileid(1:end-4),'.tif'];
-            if ~exist(cellsave,'file')
-                cellind=cellcoordfull{f};
-                cellmask=cellmaskgen(cellind,fileid,cellsave,1);
-                cellmask=uint8(cellmask);
-                imwrite(cellmask,cellsave,'tif');
-            end
+            %             if ~exist(cellsave,'file')
+            cellind=cellcoordfull{f};
+            cellmask=cellmaskgen(cellind,fileid,cellsave,1);
+            cellmask=uint8(cellmask);
+            imwrite(cellmask,cellsave,'tif');
+            %             end
         catch ME
             f
             fileid

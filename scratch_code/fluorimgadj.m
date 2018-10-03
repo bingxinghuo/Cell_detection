@@ -43,8 +43,8 @@ fluoroimg1=double(fluoroimg);
 fluoroimg1=fluoroimg1-adjmat;
 % Image contrast boost by applying DoG
 % ****Note: Use at least 128G RAM to run Gaussian filters***
-fluoroimg_bg=imgaussfilt(fluoroimg1,sigma(1));
-fluoroimg_fg=imgaussfilt(fluoroimg1,sigma(2));
-fluoroimg1=fluoroimg_fg-fluoroimg_bg;
-fluoroimg1=cast(fluoroimg1,'like',fluoroimg);
+% fluoroimg_bg=imgaussfilt(fluoroimg1,sigma(1));
+% fluoroimg_fg=imgaussfilt(fluoroimg1,sigma(2));
+% fluoroimg1=fluoroimg_fg-fluoroimg_bg;
+% fluoroimg1=cast(fluoroimg1,'like',fluoroimg);
 end

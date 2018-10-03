@@ -10,5 +10,7 @@ if ~isempty(cellind)
         cellmask(cellind(c,2),cellind(c,1))=255;
     end
 end
-cellmask=downsample_max(cellmask,dsrate);
+if dsrate>1
+    cellmask=downsample_max(cellmask,dsrate);
+end
 imwrite(cellmask,cellmaskfile,'tif');

@@ -21,8 +21,8 @@ else  % no small tif
 end
 %% 1. adjust image
 % 1.1 convert color scale
-fluoroimg1=single(fluimg)/2^12*2^8;
-imgmask=imgmaskgen(fluoroimg1,1);
+fluimg1=single(fluimg)/2^12*2^8;
+imgmask=imgmaskgen(fluimg1,1);
 %% convert back to original resolution
 imgsize=imfinfo([jp2dir,jp2file]);
 imgwidth=imgsize.Width;
