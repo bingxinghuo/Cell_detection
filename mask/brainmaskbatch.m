@@ -24,7 +24,13 @@ for f=1:Nfiles
         % load/generate brain section mask (note: there are errors in some images)
         if exist([pwd,'/',maskname],'file')~=2  % no mask file yet
             %             imgmask=brainmaskfun_reg(fluoroimg)
-            imgmask=brainmaskfun_16bittif(fileid,['../',upper(brainid),'F-STIF/'],jp2dir);
+            if f>1
+                lastmask=imread([pwd,'/imgmasks/imgmaskdata_',num2str(f-1),'.tif']);
+                imgarea=sum(sum(lastmask));
+            else
+                imgarea=0;
+            end
+            imgmask=brainmaskfun_16bittif(fileid,['../',upper(brainid),'F-STIF/'],jp2dir,imgarea);
             %             parsave(maskname,imgmask)
             imwrite(imgmask,maskname,'tif')
         end

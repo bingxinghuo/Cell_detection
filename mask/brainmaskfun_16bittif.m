@@ -3,7 +3,7 @@
 % modified from brainmaskfun_16bit.m
 % This code automatically detects the brain slice in the 12-bit fluorescent image
 % and saves the mask as a .mat file.
-function imgmask0=brainmaskfun_16bittif(jp2file,tifdir,jp2dir)
+function imgmask0=brainmaskfun_16bittif(jp2file,tifdir,jp2dir,maskarea)
 fluorotif=[tifdir,jp2file(1:end-4),'.tif'];
 M=64;
 if exist(fluorotif,'file')
@@ -22,7 +22,7 @@ end
 %% 1. adjust image
 % 1.1 convert color scale
 fluimg1=single(fluimg)/2^12*2^8;
-imgmask=imgmaskgen(fluimg1,1);
+imgmask=imgmaskgen(fluimg1,1,maskarea/M^2);
 %% convert back to original resolution
 imgsize=imfinfo([jp2dir,jp2file]);
 imgwidth=imgsize.Width;

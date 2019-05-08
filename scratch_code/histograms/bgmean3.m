@@ -12,7 +12,7 @@ elseif exist([maskfile,'.mat'],'file')
     maskvar=fieldnames(imgmask);
     imgmask=getfield(imgmask,maskvar{1});
 end
-imgmask1=downsample_max(imgmask,M);
+imgmask1=downsample_max(imgmask,M,M);
 imgmask1=cast(imgmask1,'like',rgbimg);
 % get tissue
 brainimg=rgbimg.*cat(3,imgmask1,imgmask1,imgmask1);

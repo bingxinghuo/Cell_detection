@@ -9,7 +9,7 @@ columns=size(fluoroimg,2);
 imgmask=logical(zeros(rows, columns,'single'));
 %% 1. adjust image
 % 1.1 convert color scale
-fluoroimg1=single(fluoroimg)/2^12*2^8;
+fluoroimg1=single(fluoroimg)/2^12*2^4;
 % 1.2 collect all the info in 3 channels
 fluoroimg2=sum(fluoroimg1,3);
 % 1.3 Gaussian filter
@@ -35,6 +35,7 @@ for i=2:length(N)
         k=k+1;
     end
 end
+%%
 if ~isempty(Ncross)
     thresh=x(Ncross(1));
     dimg=fluoroimg3>2^thresh; % include only the second mode in the image histogram

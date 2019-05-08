@@ -1,7 +1,7 @@
 % find the cutoff threshold for removing background
 function thresh=imgcutoff(imgbit)
 global bitinfo
-bitinfo=12;
+bitinfo=14;
 v=version('-release'); % check matlab version
 v=str2double(v(1:4));
 %% determine the threshold
