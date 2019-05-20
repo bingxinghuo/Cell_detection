@@ -6,12 +6,9 @@ M=64;
 %%
 filelist=jp2lsread;
 %% 1. set standard
-secid0=input('Please set a section as the standard: ','s'); % sec 200 for m919
-[f0,jp2file0]=jp2ind(filelist,secid0);
-tiffile0=['../',upper(brainid),'F-STIF/',jp2file0(1:end-4),'.tif'];
-maskfile0=['imgmasks/imgmaskdata_',num2str(f0)];
-[brainimg0,bgimgmed0]=bgmean3(tiffile0,maskfile0);
-save('background_standard','bgimgmed0')
+tifdir=['../',upper(brainid),'F-STIF/'];
+maskdir=[pwd,'/imgmasks'];
+bgstandard(filelist,tifdir,maskdir,pwd);
 %% 2. match tissue medians of the rest images
 % for f=1:length(filelist)
 % load images

@@ -55,26 +55,26 @@ if ~isempty(Ncross)
                 L(L==edgeind(ie))=0;
             end
         else
-            disp('The section is too close to the edge. Please mannually identify mask!')
-            t=1; % use the least restrictive threshold
-            thresh=x(Ncross(t));
-            dimg=fluoroimg3>2^thresh; % include only the second mode in the image histogram
-            % 1.5 adjust the binary image
-            dimg=imfill(dimg,'holes');
-            dimg=bwareaopen(dimg,100);
-            %% 2. find objects
-            L=bwlabel(dimg);
-            % remove the regions connected to the edges
-            edgeind=unique(L(:,1));
-            edgeind=[edgeind;unique(L(:,end))];
-            edgeind=[edgeind;unique(L(1,:)')];
-            edgeind=[edgeind;unique(L(end,:)')];
-            edgeind=unique(edgeind);
-            edgeind=nonzeros(edgeind);
-            for ie=1:length(edgeind)
-                L(L==edgeind(ie))=0;
-            end
-            break
+            error('The section is too close to the edge. Please mannually identify mask!')
+%             t=1; % use the least restrictive threshold
+%             thresh=x(Ncross(t));
+%             dimg=fluoroimg3>2^thresh; % include only the second mode in the image histogram
+%             % 1.5 adjust the binary image
+%             dimg=imfill(dimg,'holes');
+%             dimg=bwareaopen(dimg,100);
+%             %% 2. find objects
+%             L=bwlabel(dimg);
+%             % remove the regions connected to the edges
+%             edgeind=unique(L(:,1));
+%             edgeind=[edgeind;unique(L(:,end))];
+%             edgeind=[edgeind;unique(L(1,:)')];
+%             edgeind=[edgeind;unique(L(end,:)')];
+%             edgeind=unique(edgeind);
+%             edgeind=nonzeros(edgeind);
+%             for ie=1:length(edgeind)
+%                 L(L==edgeind(ie))=0;
+%             end
+%             break
         end
     end
     

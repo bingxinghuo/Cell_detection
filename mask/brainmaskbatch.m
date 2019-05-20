@@ -13,7 +13,7 @@ Nfiles=length(filelist);
 if ~exist([pwd,'/imgmasks/'])
     mkdir('imgmasks')
 end
-failcatch=zeros(Nfiles,1); % allocate a vector to catch failures
+failcatch=cell(Nfiles,2); % allocate a vector to catch failures
 % poolobj=parpool(myCluster, nslots);
 for f=1:Nfiles
     try
@@ -36,8 +36,9 @@ for f=1:Nfiles
         end
     catch ME
         f
-        failcatch(f)=1;
-        rethrow(ME)
+        failcatch{f,1}=1;
+        failcatch{f,2}=ME;
+%         rethrow(ME)
     end
 end
 % delete(poolobj)
