@@ -14,6 +14,9 @@ if v>2014
 else
     fluoroimg3 = imfilter(fluoroimg2,fspecial('gaussian',2*ceil(2*sigma)+1, sigma),'replicate');
 end
+if nargin<3
+    maskarea=0;
+end
 %% 1.4 Remove background noise by thresholding
 fluoropix=reshape(fluoroimg3,rows*columns,1);
 fluoropixbit=log2(fluoropix);
