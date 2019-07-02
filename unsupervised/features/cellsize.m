@@ -1,5 +1,7 @@
-function bwimg=cellsize(bwimg)
-global sizepar
+function bwimg=cellsize(bwimg,sizepar)
+if nargin<2
+    global sizepar
+end
 cc=bwconncomp(bwimg);
 area=regionprops(cc,'Area');
 % if area(k).Area < (2/.46)^2*pi   % cell diameter > 4 microns, with 0.46 microns/pixel resolution

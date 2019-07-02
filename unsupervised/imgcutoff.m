@@ -9,14 +9,14 @@ xbins=[0:.05:bitinfo]; % 12-bit image
 [N,X]=hist(log2(nonzeros(imgbit(~isinf(imgbit)))),xbins); % histogram of log2 of log2 image (approx. second derivative)
 %
 nz=find(N); % nonzero elements of N
-if ~isempty(nz)
+if length(nz)>2
     if v<2016
         pks=findpeaks(N(nz)); % find local maxima
         locs=pks.loc;
     else
         [~,locs]=findpeaks(N(nz));
     end
-    if length(locs)==1 % if there is only one maximum, there is only background
+    if length(locs)<=1 % if there is only one maximum, there is only background
         peakind=length(X);
     else % if there are more than one maxima
         N1=N;

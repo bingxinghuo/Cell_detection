@@ -1,5 +1,6 @@
 function [bwimg_patch,and,localmax]=cellpatch(bwimg)
 global  sigma
+sigma=[50 1];
 %% initialize
 bwimg_patch=cell(2,1);
 %% 1. Sukhendu's transformation

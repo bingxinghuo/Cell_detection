@@ -1,18 +1,25 @@
+animalid='m820';
 M=64;
+bitinfo=8;
 % load images
 % jp2file=filelist{f};
-fluoroimg=imread(jp2file);
+filelist=filelsread;
+[fileind,fileid]=jp2ind(filelist,'131');
+[filepath,filename,ext] = fileparts(fileid)
+if bitinfo==8
+fluoroimg=imread(['../JP2-8bit/',filename,'.jp2']);
+elseif bitinfo==12
+    fluoroimg=imread(['../JP2/',filename,'.jp2']);
+end
+[rows,cols,C]=size(fluoroimg);
 % smooth to remove sharp noise
 % fluoroimg1=imfilter(single(fluoroimg),fspecial('gaussian',2*ceil(2*1)+1, 1),'same'); % mitragpu3
 fluoroimg1=imgaussfilt(single(fluoroimg),1);
 %% downsample using *maximum* method
 clear flumax
-for c=1:3
-    flumax(:,:,c)=downsample_max(fluoroimg1(:,:,c),M);
+for c=1:C
+    flumax(:,:,c)=downsample_max(fluoroimg1(:,:,c),M,M);
 end
-flumax1=single(flumax)-adjmat;
-%% threshold for signals
-sigmask=flumax1>30; % same threshold for foreground/background distinction
 % brain mask
 maskfile=['imgmasks/imgmaskdata_',num2str(f)];
 if exist([maskfile,'.tif'],'file')
@@ -21,14 +28,24 @@ elseif exist([maskfile,'.mat'],'file')
     imgmask=load(maskfile);
     maskvar=fieldnames(imgmask);
     imgmask=getfield(imgmask,maskvar{1});
+elseif exist(maskfile,'file') % no extension
+    imgmask=imread(maskfile);
 end
-imgmask1=downsample_mean(imgmask,M);
+tifmask=downsample_mean(imgmask,M);
+tifimg=imread(fileid);
+bgimgmed=bgmean3_tif(tifimg,tifmask);
+flumax1=baselineadj(flumax,bgimgmed,bgimgmed0);
+%% threshold for signals
+sigmask=flumax1>30; % same threshold for foreground/background distinction
+
 %% composite mask
 sigmask1=sigmask.*cat(3,imgmask1,imgmask1,imgmask1);
 % Apply back to original image
-FBmask=sigmask1(:,:,3);
+FBmask=sigmask1(:,:,1);
 FBmask1=repelem(FBmask,M,M);
-FBmask1=uint16(FBmask1);
+FBmask1=FBmask1(1:rows,1:cols,1:C);
+FBmask1=cast(FBmask1,'like',fluoroimg);
+fluoroimg1=cast(fluoroimg1,'like',fluoroimg);
 FBimg=fluoroimg1.*cat(3,FBmask1,FBmask1,FBmask1);
 % FBimg should include all FB cells, 0 missing.
 %% extract all 64x64 tiles

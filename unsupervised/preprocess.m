@@ -51,7 +51,7 @@ else
     if v<2016
         img_denoise=imfilter(img_nobak,fspecial('gaussian',2*ceil(2*sigma(2))+1, sigma(2)),'same');
     else
-        img_denoise=imgaussfilt(img_unsat,sigma(2));
+        img_denoise=imgaussfilt(img_nobak,sigma(2));
     end
     clear img_nobak
     %% 2. Convert to binary image

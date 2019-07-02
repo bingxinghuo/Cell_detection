@@ -10,14 +10,15 @@ function FBdetection_consolid_allimg1_bnb()
 %%
 myCluster = parcluster('local'); % cores on compute node to be "local"
 addpath(genpath('~/'))
-brainids={'m920'};
+brainids={'m852'};
 D=length(brainids);
 poolobj=parpool(myCluster, 12);
 global bitinfo
 for d=1:D
     brainid=brainids{d};
     %% 0. Preparation
-    jp2dir=['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
+%     jp2dir=['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2/']; % go to the directory of JP2
+    jp2dir=['~/marmosetRIKEN/NZ/',brainid,'/',brainid,'F/JP2-REG/']; % go to the directory of JP2
     cd(jp2dir)
     % 0.1 read in file list
     filelist=jp2lsread;
