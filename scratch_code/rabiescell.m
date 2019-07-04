@@ -1,20 +1,28 @@
-% imgfile='DL17_242.jp2';
-% annofile='../annotation/DL17_242_full.txt';
+% filedir='/Users/bhuo/CSHLservers/gpu2_Mdrives/M29/PeterStrickData/';
+% sampleid='DL17_242';
 % sizepar=[2,1000]; % radius in microns
 % sigma=[200 1]; % s.d. in microns
 % resolution=.25;
-function [cellmask1,cellannotile,hitscoretile]=rabiescell(imgfile,annofile,sigma,sizepar,resolution,outputfile)
+function [cellmask,cellannotile,hitscoretile]=rabiescell(filedir,sampleid,sigma,sizepar,resolution,N)
+imgfile=[filedir,'Normalized/',sampleid,'.jp2'];
 img=imread(imgfile);
-fid=fopen(annofile);
-cellanno=textscan(fid,'%d',2);
-fclose(fid);
-cellanno=cell2mat(cellanno); % annotation
+annofile=[filedir,'annotation/',sampleid,'.txt'];
+if ~exist(annofile,'file')
+    annofile=[filedir,'annotation/',sampleid,'_full.txt'];
+end
+
 sigma1=sigma(1)*resolution;
 sigma2=sigma(2)*resolution;
 sizepar=round(sizepar.^2*pi/resolution^2);
 sizepar1=sizepar(1);
+if nargin<=5 % set granularity of tiles
+    N=10000;
+end
+outputdir=[filedir,'unsupervised/'];
+if ~exist(outputdir,'dir')
+    mkdir(outputdir)
+end
 %% cut into tiles
-N=10000;
 [rows,cols]=size(img);
 imgtile=cell(ceil(rows/N),ceil(cols/N));
 for r=1:floor(rows/N)
@@ -30,7 +38,9 @@ imgtile{r+1,c+1}=img(r*N+1:rows,c*N+1:cols);
 %% detect cells
 [R,C]=size(imgtile);
 imgtiles=reshape(imgtile,R*C,1);
+cellimgs=cell(R*C,1);
 cellmasks=cell(R*C,1);
+cutoff=zeros(R*C,1);
 tic
 parfor n=1:R*C
     img1=imgtiles{n,1};
@@ -44,49 +54,54 @@ parfor n=1:R*C
     bwimg=imfill(bwimg,'holes'); % close gaps
     bwimg=bwareaopen(bwimg,sizepar1); % remove small patches
     [~,gradimg,~]=cellpatch(bwimg); % calculate distance map
-    cellmasks{n}=gradimg;
+    cellimgs{n}=gradimg;
+    % binarize to mask
+    if sum(sum(cellimgs{n}))>sizepar1
+        cutoff(n)=imgcutoff(cellimgs{n}); % calculate threshold
+        cellmasks{n}=cellimgs{n}>=cutoff(n);
+        se=strel('disk',round(cutoff(n)/sqrt(2)*2)); % compensate for the removal on the distance map
+        cellmasks{n}=imdilate(cellmasks{n},se);
+        cellmasks{n}=cellsize(cellmasks{n},sizepar);
+    else
+        cellmasks{n}=zeros(size(cellimgs{n}));
+    end
+    
 end
+cellimg=reshape(cellimgs,R,C);
 cellmask=reshape(cellmasks,R,C);
 toc
-%% tilewise binarization
-cellannotile=cell(R,C);
-cutoff=zeros(R,C);
-cellmask1=cell(R,C);
-hitscoretile=zeros(R,C);
-TPR=zeros(R,C);
-for r=1:R
-    for c=1:C
-        % annotation/ground truth
-        cellannotile{r,c}=cellanno-ones(size(cellanno))*[(r-1)*N,0;0,(c-1)*N];
-        cellannotile{r,c}=cellannotile{r,c}.*(cellannotile{r,c}>0);
-        cellannotile{r,c}=cellannotile{r,c}.*(cellannotile{r,c}<=10000);
-        cellannotile{r,c}=cellannotile{r,c}((cellannotile{r,c}(:,1).*cellannotile{r,c}(:,2))>0,:);
-        % binarize to mask
-        cutoff(r,c)=imgcutoff(cellmask{r,c}); % calculate threshold
-        cellmask1{r,c}=cellmask{r,c}>=cutoff(r,c);
-        % morphological manipulation
-        %         cellmask1{r,c}=eccentricity(cellmask1{r,c},.99);
-        se=strel('square',round(cutoff(r,c)/sqrt(2)*2)); % compensate for the removal on the distance map
-        cellmask1{r,c}=imdilate(cellmask1{r,c},se);
-        cellmask1{r,c}=cellsize(cellmask1{r,c},sizepar);
-        % record TP
-        if ~isempty(cellannotile{r,c})
-            L=size(cellannotile{r,c},1);
-            hitscore=zeros(L,1);
-            for l=1:L
-                hitscore(l)=cellmask1{r,c}(cellannotile{r,c}(l,1),cellannotile{r,c}(l,2));
+%% add annotation info, if exists
+if ~exist(annofile,'file')
+    cellannotile={};
+    hitscoretile={};
+else
+    fid=fopen(annofile);
+    cellanno=textscan(fid,'%f %f');
+    fclose(fid);
+    cellanno=cell2mat(cellanno); % annotation
+    cellannotile=cell(R,C);
+    hitscoretile=zeros(R,C);
+    for r=1:R
+        for c=1:C
+            % annotation/ground truth
+            cellannotile{r,c}=cellanno-ones(size(cellanno))*[(r-1)*N,0;0,(c-1)*N];
+            cellannotile{r,c}=cellannotile{r,c}.*(cellannotile{r,c}>0);
+            cellannotile{r,c}=cellannotile{r,c}.*(cellannotile{r,c}<=N);
+            cellannotile{r,c}=cellannotile{r,c}((cellannotile{r,c}(:,1).*cellannotile{r,c}(:,2))>0,:);
+            
+            % record TP
+            if ~isempty(cellannotile{r,c})
+                L=size(cellannotile{r,c},1);
+                hitscore=zeros(L,1);
+                for l=1:L
+                    hitscore(l)=cellmask{r,c}(cellannotile{r,c}(l,1),cellannotile{r,c}(l,2));
+                end
+                hitscoretile(r,c)=sum(hitscore);
             end
-            hitscoretile(r,c)=sum(hitscore);
         end
     end
 end
-for r=1:R
-    for c=1:C
-        TPR(r,c)=sum(hitscoretile(r,c))/size(cellannotile{r,c},1);
-    end
-end
 %% save output
-if nargin>5
-    save([outputfile,'.mat'],'cellmask1','cellannotile','hitscoretile')
-    imwrite(TPR,[outputfile,'.png'])
-end
+outputmat=[outputdir,sampleid,'.mat'];
+save(outputmat,'cellimg','cellmask','cellannotile','hitscoretile','-v7.3')
+
