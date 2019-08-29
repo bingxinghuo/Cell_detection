@@ -15,7 +15,7 @@ else  % no small tif
         % generate small tif for future use
         fluoroimg=imread([jp2dir,jp2file]);
         [~,~,C]=size(fluoroimg);
-        for c=1:C
+        for c=1:3
             fluimg(:,:,c)=downsample_mean(fluoroimg(:,:,c),M);
         end
         imwrite(fluimg,tiffile,'tif')
