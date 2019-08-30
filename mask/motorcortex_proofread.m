@@ -42,15 +42,15 @@ motorbraininfo(7).originresolution=.46*2;
 motorbraininfo(7).flips=[1,2];
 motorbraininfo(8).animalid='m918';
 motorbraininfo(8).modality='mba';
-% parentpath='/Users/bhuo/CSHLservers/mitragpu3/disk125/main/marmosetRIKEN/NZ';
-parentpath='~/CSHLservers/mitragpu3/marmosetRIKEN/NZ';
+parentpath='/Users/bhuo/CSHLservers/mitragpu3/disk125/main/marmosetRIKEN/NZ';
+% parentpath='~/CSHLservers/mitragpu3/marmosetRIKEN/NZ';
 marmosetlistfile='~/Documents/GITHUB/Connectivity_matrix/marmosetregionlist.mat';
 targetdir='~/Dropbox (Marmoset)/BingxingHuo/Marmoset Brain Architecture/MotorCortex/';
 %%
 % for i=4:length(motorbraininfo)
-for i=8
+for i=1
     workpath=[parentpath,'/',motorbraininfo(i).animalid,'/',motorbraininfo(i).animalid,'F/JP2-REG/'];
     stifdir=[workpath,motorbraininfo(i).animalid,'F-STIF/'];
     tissuemaskdir=[stifdir,'/imgmasks/'];
-    branmask_proofread(stifdir,tissuemaskdir,'failsecs.mat');
+    brainmask_proofread(stifdir,tissuemaskdir,'failsecs.mat');
 end
