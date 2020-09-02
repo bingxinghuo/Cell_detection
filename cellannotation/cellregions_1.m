@@ -2,7 +2,7 @@ parentpath='/Users/bhuo/CSHLservers/mitragpu3/disk125/main/marmosetRIKEN/NZ';
 marmosetlistfile='~/Documents/GITHUB/Connectivity_matrix/marmosetregionlist.mat';
 targetdir='~/Dropbox (Marmoset)/BingxingHuo/Marmoset Brain Architecture/MotorCortex/';
 %%
-i=9;
+i=8;
 animalid=motorbraininfo(i).animalid;
 originresolution=motorbraininfo(i).originresolution;
 workpath=[parentpath,'/',animalid,'/',animalid,'F/JP2-REG/'];
