@@ -1,4 +1,4 @@
-# Cell_detection
+# Fluorescent Cell Detection Tool
 Detecting fluorescent-labeled cells in large, high-resolution brain histology images. 
 
 1. mask/: Generating a mask of brain section within the entire image
